@@ -34,7 +34,7 @@ data <-
   group_by(Group, Name, id, game, vp) %>%
   summarise_all(max) %>%
   ungroup() %>%
-  select(-Group, -Name, -id, -id_def, -game) %>%
+  select(-game, -Name, -id, -id_def, -Group) %>%
   drop_na(vp)
 
 id_formulas <- 
@@ -47,21 +47,14 @@ id_formulas <-
 fixed_formula <-
   paste0("vp ~ ", id_formulas) %>%
   formula()
-  
-data_fix <- 
-  data %>%
-  mutate(gameid = factor(gameid)) %>%
-  select(vp, matches("^id"))
-  
 
-data_rnd <-
+data <- 
   data %>%
-  select(gameid) %>%
-  fastDummies::dummy_cols(select_columns = "gameid", remove_selected_columns = T, remove_first_dummy = T) %>%
-  data.matrix()
+  mutate(gameid = factor(gameid))
 
 model <-
   glmmLasso(fix = fixed_formula, 
-            rnd = data_rnd,
-            data = data_fix,
+            #rnd = NULL,
+            rnd = list(gameid=~1),
+            data = data,
             lambda = 0.1)
