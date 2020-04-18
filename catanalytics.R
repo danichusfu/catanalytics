@@ -1,7 +1,7 @@
 library(tidyverse)
 
 
-results <- read_csv("../Desktop/ranks.csv")
+results <- read_csv("ranks.csv")
 
 results <-
   results %>%
